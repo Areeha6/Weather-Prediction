@@ -1,0 +1,16 @@
+y = csvread('Book3.csv');
+y = y(1:16178);
+%Now create the FTDNN network, using the timedelaynet command. 
+% use a tapped delay line with delays from 1 to 8, and use ten neurons in the hidden layer
+ftdnn_net = timedelaynet([1:1],10);
+ftdnn_net.trainParam.epochs = 1000;
+ftdnn_net.divideFcn = '';
+%Arrange the network inputs and targets for training. Because the network has a tapped delay line with a maximum delay of 8, begin by predicting the ninth value of the time series. You also need to load the tapped delay line with the eight initial values of the time series (contained in the variable Pi):
+[p,Pi,Ai,t] = preparets(ftdnn_net,y,y); %The preparets function uses the network object to determine how to fill the tapped delay lines with initial conditions, and how to shift the data to create the correct inputs and targets to use in training or simulating the network.
+ftdnn_net = train(ftdnn_net,p,t,Pi);
+%Notice that the input to the network is the same as the target. Because the network has a minimum delay of one time step, this means that you are performing a one-step-ahead prediction.
+%Now simulate the network and determine the prediction error.
+yp = ftdnn_net(p,Pi);
+e = gsubtract(yp,t);
+rmse = sqrt(mse(e))
+%Note that gsubtract is a general subtraction function that can operate on cell arrays.
