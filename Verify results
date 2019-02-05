@@ -1,0 +1,14 @@
+dataFetched= csvread('Book3.csv');
+%T=dataFetched;
+net = narxnet(1:2,20); %FOR 20 HIDDEN NEURONS
+dataT = mat2cell(dataFetched(1,:),[1],ones(1,length(dataFetched(1,:))));%FOR TEMPERATURE PREDICTIONS
+[XsT,XiT,AiT,TsT] = preparets(net,dataT,{},YT); %Xs=shifted inputs,Xi=initial input states,Ai=initial layer states,Ts=shifted targets
+netT = train(net,XsT,TsT,XiT,AiT);
+YT = netT(XsT,XiT);
+
+%%%%%%%%%%%%%% Mesuring performance for every variable %%%%%%%%%%%%%%%%%%%%%%
+perfT = perform(netT,TsT,YT)
+
+% [netc,Xic,Aic] = closeloop(netT,Xf,Af);
+% view(netc)
+% y2 = netc(cell(0,24),Xic,Aic)
