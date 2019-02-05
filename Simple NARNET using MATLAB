@@ -1,0 +1,9 @@
+
+dataFetched = csvread('test2.csv');
+%%%Running narnet for predictions%%%
+net = narnet(1:2,10); %narnet with 10 hidden neurons
+data=mat2cell(dataFetched,[1],ones(1,length(dataFetched)));
+[Xs,Xi,Ai,Ts] = preparets(net,{},{},data);%Xs=shifted inputs,Xi=initial input states,Ai=initial layer states,Ts=shifted targets
+net = train(net,Xs,Ts,Xi,Ai);
+Y = net(Xs,Xi);
+perf = perform(net,Ts,Y)
