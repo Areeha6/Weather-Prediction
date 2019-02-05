@@ -1,0 +1,19 @@
+X = csvread('Book3.csv');
+T=csvread('Book3.csv');
+Xnew = X(11325:end);
+X = X(1:11324);
+T = T(1:11324);
+X = mat2cell(X,[1],ones(1,length(X)));
+T=mat2cell(T,[1],ones(1,length(T)));
+%Train a time delay network, and simulate it on the first 80 observations.
+net = timedelaynet(1:2,10);
+[Xs,Xi,Ai,Ts] = preparets(net,X,T);
+net = train(net,Xs,Ts,Xi,Ai);
+view(net)
+%Calculate the network performance
+[Y,Xf,Af] = net(Xs,Xi,Ai);
+perf = perform(net,Ts,Y);
+%Run the prediction for 20 timesteps ahead in closed loop mode.
+[netc,Xic,Aic] = closeloop(net,Xf,Af);
+view(netc)
+y2 = netc(Xnew,Xic,Aic);
